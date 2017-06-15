@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      /*@import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);*/
+
+      @font-face{
+        font-family: 'Droid Serif';
+        src: url('fonts/Droid_Serif/DroidSerif.ttf');
+      }
+      @font-face{
+        font-family: 'Yanone Kaffeesatz';
+        src: url('fonts/Yanone_Kaffeesatz/YanoneKaffeesatz-Regular.ttf');
+      }
+      @font-face{
+        font-family: 'Ubuntu Mono';
+        src: url('fonts/Ubuntu_Mono/UbuntuMono-Regular.ttf');
+      }
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <script src="remark.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create({
+        sourceUrl: 'file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/Ros_control.md'
+      });
+    </script>
+  </body>
+</html>
+
