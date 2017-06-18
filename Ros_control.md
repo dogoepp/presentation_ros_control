@@ -23,8 +23,8 @@ exclude: true
 
 LARSEN : Lifelong Autonomy and interaction skills for Robots in a Sensing ENvironment
 
-<img width="100px" style="float:left" alt="Loria (UL)" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/logo_loria.jpg"/>
-<img width="200px" style="float:right" alt="l'INRIA" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/logo_inria.jpg"/>
+<img width="100px" style="float:left" alt="Loria (UL)" src="images/logo_loria.jpg"/>
+<img width="200px" style="float:right" alt="l'INRIA" src="images/logo_inria.jpg"/>
 
 --
 exclude:true
@@ -37,7 +37,7 @@ Détails :
 
 ---
 layout: false
-### Le projet ResiBots <img width="200px" style="float:right; margin:1em" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/resibots_avatar.png"/>
+### Le projet ResiBots <img width="200px" style="float:right; margin:1em" src="images/resibots_avatar.png"/>
 
 Le but du projet est de poser les fondations algorithmiques permettant à des robots abordables de se remettre de dommages imprévus en quelques minutes et en autonomie.
 
@@ -51,21 +51,21 @@ Approche :
 
 robots à pattes,
 
-.center[<img height="500px" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/Hexaforce-aggressive.jpg"/>]
+.center[<img height="500px" src="images/Hexaforce-aggressive.jpg"/>]
 
 ---
 ### Robots pour ResiBots
 
 robots à pattes, un bras manipulateur et une base mobile Kuka.
 
-.center[<img height="500px" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/omnigrasper.jpg"/>]
+.center[<img height="500px" src="images/omnigrasper.jpg"/>]
 
 ---
 ### Robots pour ResiBots
 
 robots à pattes, un bras manipulateur et une base mobile Kuka.
 
-.center[<img height="500px" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/optitrack.jpg"/>]
+.center[<img height="500px" src="images/optitrack.jpg"/>]
 
 
 
@@ -80,7 +80,7 @@ Tout, sauf la base mobile Kuka est construit avec des Dynamixels de Robotis.
 ---
 ### Dynamixels
 
-.center[![un Dynamixel MX-28](file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/Dynamixel-full-range.jpg)]
+.center[![un Dynamixel MX-28](images/Dynamixel-full-range.jpg)]
 
 ???
 Les actionneurs de Robotis sont des servo-moteurs tout intégrés, communiquant avec un protocole série et branchés en cascade.
@@ -99,7 +99,7 @@ Les actionneurs de Robotis sont des servo-moteurs tout intégrés, communiquant 
 
 - permettent un assemblage facile et modulaire
 
-.center[![Quelques exemples de montage pour les Dynamixels](file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/rx-28_device_combination.png)]
+.center[![Quelques exemples de montage pour les Dynamixels](images/rx-28_device_combination.png)]
 <!-- .right[![Quelques exemples de montage pour les Dynamixels](file:///home/dgoepp/Images/Dynamixel/Modularité-dynamixels.jpg)] -->
 
 ???
@@ -171,7 +171,7 @@ Trois modes de commande : position, vitesse et effort
 <br/>
 <br/>
 <br/>
-.image[![illustration de ros_control](file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/diagrammes/dessin.svg)]
+.image[![illustration de ros_control](diagrammes/dessin.svg)]
 
 ???
 <tt>ros_control</tt> articule le code autour de trois composants...
@@ -195,7 +195,7 @@ Trois modes de commande : position, vitesse et effort
 <br/>
 <br/>
 <br/>
-.image[![illustration de ros_control](file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/diagrammes/dessin-RobotHW-1.svg)]
+.image[![illustration de ros_control](diagrammes/dessin-RobotHW-1.svg)]
 
 ---
 ### <tt>ros_control</tt>
@@ -203,7 +203,7 @@ Trois modes de commande : position, vitesse et effort
 <br/>
 <br/>
 <br/>
-.image[![illustration de ros_control](file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/diagrammes/dessin-RobotHW-2.svg)]
+.image[![illustration de ros_control](diagrammes/dessin-RobotHW-2.svg)]
 
 ---
 ### <tt>ros_control</tt>
@@ -211,7 +211,7 @@ Trois modes de commande : position, vitesse et effort
 <br/>
 <br/>
 <br/>
-.image[![illustration de ros_control](file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/diagrammes/dessin-RobotHW-3.svg)]
+.image[![illustration de ros_control](diagrammes/dessin-RobotHW-3.svg)]
 
 ---
 ### <tt>ros_control</tt>
@@ -219,7 +219,7 @@ Trois modes de commande : position, vitesse et effort
 <br/>
 <br/>
 <br/>
-.image[![illustration de ros_control](file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/diagrammes/dessin-RobotHW-4.svg)]
+.image[![illustration de ros_control](diagrammes/dessin-RobotHW-4.svg)]
 
 ???
 La communication entre l'interface matérielle et le contrôleur se fait par une interface matérielle. Le contrôleur reçoit en fait des pointeurs vers des données écrites ou lues par `RobotHW`.
@@ -234,7 +234,7 @@ Les contrôleurs ont des interfaces ROS. Par exemple, un contrôleur de base mob
 <br/>
 <br/>
 <br/>
-.image[![illustration de ros_control](file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/diagrammes/dessin-RobotHW-dataflow.svg)]
+.image[![illustration de ros_control](diagrammes/dessin-RobotHW-dataflow.svg)]
 
 ???
 Dans la boucle principale (temps réel), on appelle `read()`, `update()`, et enfin `write()`.
@@ -247,7 +247,7 @@ L'interface matérielle donne en fait des pointeurs vers des variables qui seron
 <br/>
 <br/>
 <br/>
-.image[![illustration de ros_control](file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/diagrammes/dessin-RobotHW-ControllerManager.svg)]
+.image[![illustration de ros_control](diagrammes/dessin-RobotHW-ControllerManager.svg)]
 
 ???
 Revenons à l'illustration précédente et parlons un peu du `controller_manager`. Il gère le cycle de vie des contrôleurs via des services.
