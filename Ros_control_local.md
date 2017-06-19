@@ -5,6 +5,8 @@ class: center, middle, inverse
 
 # ROS control et son utilisation pour les Dynamixels
 
+.footnote[dorian.goepp@inria.fr]
+
 ???
 Je suis Dorian Goepp et je viens de l'INRIA Nancy.
 
@@ -39,7 +41,16 @@ Détails :
 layout: false
 ### Le projet ResiBots <img width="200px" style="float:right; margin:1em" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/resibots_avatar.png"/>
 
-Le but du projet est de poser les fondations algorithmiques permettant à des robots abordables de se remettre de dommages imprévus en quelques minutes et en autonomie.
+Objectif : développer des algorithmes
+
+- l'autonomie des robots sur le long terme,
+- en gérant des dommages imprévus
+- avec des robots abordables
+
+???
+Le but du projet est de poser les **fondations algorithmiques** permettant à des robots **abordables** de se remettre de **dommages imprévus** en quelques minutes et en **autonomie**.
+
+--
 
 Approche :
 
@@ -87,12 +98,25 @@ Les actionneurs de Robotis sont des servo-moteurs tout intégrés, communiquant 
 
 --
 - toute l'électronique est intégrée
-- protégés contre les surcharges et surtensions
+--
+
 - branchement en cascade -> une seule interface série/USB et une seule alimentation
+--
+
 - le protocole de communication est (presque) complètement documenté
-    - ce qui nous donne une entière liberté sur le logiciel (la libération du SDK par Robotis n'est que relativement récente, l'un de vous a-t-il travaillé avec ?)
+???
+Ce qui nous donne une entière liberté sur le logiciel (le dépôt github a été créé en mars 2016)
+
+**déjà travaillé avec le SDK de Robotis ?**
+
+--
+
+- protégés contre les surcharges et surtensions
 - les actionneurs sont _relativement_ abordables
-- ils y a plusieurs gammes, allant du très petit au assez gros (les Pro).
+- plusieurs gammes
+
+???
+pour les différents besoins qu'on peut en avoir
 
 ---
 ### Dynamixels
@@ -250,54 +274,36 @@ L'interface matérielle donne en fait des pointeurs vers des variables qui seron
 .image[![illustration de ros_control](file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/diagrammes/dessin-RobotHW-ControllerManager.svg)]
 
 ???
-Revenons à l'illustration précédente et parlons un peu du `controller_manager`. Il gère le cycle de vie des contrôleurs via des services.
+Je vais maintenant parler un peu plus des contrôleurs, et du `controller_manager` qui les gère.
 
 ---
 ### Contrôleurs
 
 Plugin chargé dynamiquement par le <tt>controler_manager</tt>.
 
+--
+
 Un contrôleur peut être dans deux états :
 - stopped
 - running
 
-???
-<tt>controler_manager</tt> gère les contrôleurs et les charge
-
 --
 
-Les contrôleurs sont exécutés **périodiquements** et **séquentiellement**..
-
---
-
-Via des services ROS, <tt>controler_manager</tt>
+via des services ROS, <tt>controler_manager</tt>
 
 - charge les contrôleurs
 - gère leur cycle de vie
 
----
-### Goodies de ROS control
-
-Les possibilités avancées offertes par ros_control
-
-- transmission interface
-- joint limit
-- combined hardware interface
-- resource claim policies
-- changement de contrôleur à la volée
-
 ???
+<tt>controler_manager</tt> gère les contrôleurs et les charge.
 
-En supplément : des contrôleurs simples sans asservissement (dans ros_controllers)
+Il permet aussi de **changer** de contrôleur **à la volée**.
 
-Autres possibilités : arrêt d'urgence, politique personalisée de gestion des ressources.
+En cas d'arrêt d'urgence, l'idée est de faire un **reset** sur le **contrôleur**.
 
----
-### <tt>ros_control</tt>
+--
 
-Jusque là nous avons vu à un haut niveau comment ros_control fonctionne. Il sépare  le matériel des contrôleurs, permet d'en changer à chaud, de gérer les limites d'articulation et trois types de commande.
-
-Comme dit, les robots sur lesquels je travaille utilisent tous des Dynamixels et nous voulions les intégrer correctement dans ros_control. Voyons donc l'interface matérielle qui en découle.
+Les contrôleurs sont exécutés **périodiquements** et **séquentiellement**
 
 ---
 class: middle, center, inverse
@@ -305,6 +311,11 @@ class: middle, center, inverse
 ## dynamixel hardware interface
 
 .footnote[[https://github.com/resibots/dynamixel_control_hw/](https://github.com/resibots/dynamixel_control_hw/)]
+
+???
+Jusque là nous avons vu à un haut niveau comment ros_control fonctionne. Il sépare  le matériel des contrôleurs, permet d'en changer à chaud, et offre trois modes de commande.
+
+Les robots sur lesquels je travaille utilisent tous des Dynamixels et nous voulions les intégrer correctement dans ros_control. Voyons donc l'interface matérielle qui en découle.
 
 ---
 ### <tt>ros_control</tt>
@@ -324,7 +335,7 @@ En plus, les outils ROS sont à portée de main (actionlib par exemple).
 ---
 ### <tt>libdynamixel</tt>.blue[\*]
 
-Nous avons développé la bibliothèque Libdynamixel. Elle répond aux problématiques suivantes:
+Nous avons développé la bibliothèque Libdynamixel.blue[\*]. Caractéristiques principales :
 - bibliothèque open source
 - écrite en C++11
 - fonctionne avec les version 1 et 2 du protocole
@@ -345,8 +356,13 @@ Notre travail est basé sur
 - la bibliothèque <tt>libdynamixel</tt> développée dans l'équipe
 - <tt>ros_control_boilerplate</tt>.blue[\*]
 
-.footnote[.blue[\*][https://github.com/davetcoleman/ros_control_boilerplate/](https://github.com/davetcoleman/ros_control_boilerplate/)]
+Fonctionnalités :
+- nombre arbitraire d'actionneurs (fichier de configuration)
+- commande en radians (pas de conversion)
+- décalage et vitesse limite pour chaque actionneur
 
+
+.footnote[.blue[\*][https://github.com/davetcoleman/ros_control_boilerplate/](https://github.com/davetcoleman/ros_control_boilerplate/)]
 ???
 Notre travail est basé sur ros_control_boilerplate qui offre un bon exemple de création d'une interface matérielle (pas pour la création d'un contrôleur)
 
@@ -436,17 +452,35 @@ class: middle, center, inverse
 ---
 ### Pour résumer
 
+
 ---
 ### Et au delà
-  * ros_control peut faire plus encore ...
-      * intégration avec gazebo
-  * ros_control devrait dans le future pouvoir faire ...
-      * gérer le changement de mode de commande
-  * nous aimerions ajouter ...
-      * la commande en vitesse (wheel mode)
-      * limites angulaires
-      * arrêt d'urgence
-  * j'aimerai travailler à une documentation plus complète de <tt>ros_control</tt> pour en faciliter l'accès
+* ros_control peut faire plus encore...
+  * intégration avec gazebo
+  * transmission interface
+  * limites d'articulation
+  * interface matérielle combinée
+  * politique de gestion des ressources
+  * ros_controllers
+--
+
+* ros_control devrait dans le futur pouvoir faire...
+  * gérer le changement de mode de commande
+--
+
+* future work
+  * la commande en vitesse (wheel mode)
+  * limites angulaires
+  * protocole 2
+
+
+--
+
+???
+J'aimerai travailler à une documentation plus complète de <tt>ros_control</tt>
+
 
 ---
 class: center, middle, inverse
+
+.footnote[dorian.goepp@inria.fr]
