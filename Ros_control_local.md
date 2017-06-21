@@ -20,42 +20,25 @@ Mais avant cela, un peu de contexte.
 
 ---
 layout: false
-exclude: true
-### Équipe Larsen
+### Le projet ResiBots
+<div style="float:right; margin:1em">
+    <img width="200px" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/logo_inria.png"/><br/>
+    <img width="200px" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/resibots_avatar.png"/>
+</div>
 
-LARSEN : Lifelong Autonomy and interaction skills for Robots in a Sensing ENvironment
-
-<img width="100px" style="float:left" alt="Loria (UL)" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/logo_loria.jpg"/>
-<img width="200px" style="float:right" alt="l'INRIA" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/logo_inria.jpg"/>
-
---
-exclude:true
-
-Détails :
-
--  l'équipe s'intéresse à ...
--  pour ce faire, nous sommes équipés d'un appartement intelligent contenant ...
--  et d'un espace d'expérimentation robotique comprenant un iCub, un système de MoCap et les robots de ResiBots
-
----
-layout: false
-### Le projet ResiBots <img width="200px" style="float:right; margin:1em" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/resibots_avatar.png"/>
-
-Objectif : développer des algorithmes
+Objectif : développer des algorithmes d'apprentissage par essai-erreur
 
 - l'autonomie des robots sur le long terme,
 - en gérant des dommages imprévus
 - avec des robots abordables
 
+Mots-clefs :
+- a-priori issus de simulations
+- optimisation bayésienne
+- processus gaussiens
+
 ???
 Le but du projet est de poser les **fondations algorithmiques** permettant à des robots **abordables** de se remettre de **dommages imprévus** en quelques minutes et en **autonomie**.
-
---
-
-Approche :
-
-- générer des a-prioris par des simulations
-- utiliser ces a-prioris pour choisir un comportement/une démarche qui maximise l'objectif
 
 ---
 ### Robots pour ResiBots
@@ -64,12 +47,20 @@ robots à pattes,
 
 .center[<img height="500px" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/Hexaforce-aggressive.jpg"/>]
 
+???
+Sur ce robot, chaque patte est dotée de trois degrés de liberté, chacun actionné par un servo-moteur dynamixel.
+
+Nous avons aussi une copie quasi conforme de cet hexapode (sans les capteurs de force) et une version plus grande dont les pattes sont équipées de roues orientables et motorisées TODO : photographie ?
+
 ---
 ### Robots pour ResiBots
 
 robots à pattes, un bras manipulateur et une base mobile Kuka.
 
 .center[<img height="500px" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/omnigrasper.jpg"/>]
+
+???
+Ici aussi des dynamixels sont utilisés, pour le bras. C'est cependant une autre gamme que pour les hexapodes
 
 ---
 ### Robots pour ResiBots
@@ -86,37 +77,29 @@ class: center, middle, inverse
 ## Dynamixels
 
 ???
-Tout, sauf la base mobile Kuka est construit avec des Dynamixels de Robotis.
+Comme vous avez pu le voir, **tous nos robots**, sauf la base mobile Kuka sont **construit** avec des **Dynamixels** de Robotis.
 
 ---
 ### Dynamixels
 
 .center[![un Dynamixel MX-28](file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/Dynamixel-full-range.jpg)]
 
-???
-Les actionneurs de Robotis sont des servo-moteurs tout intégrés, communiquant avec un protocole série et branchés en cascade.
-
---
 - toute l'électronique est intégrée
---
-
 - branchement en cascade -> une seule interface série/USB et une seule alimentation
---
-
+- informations disponibles sur l'état du servo (position, vitesse, température, etc.)
 - le protocole de communication est (presque) complètement documenté
-???
-Ce qui nous donne une entière liberté sur le logiciel (le dépôt github a été créé en mars 2016)
-
-**déjà travaillé avec le SDK de Robotis ?**
-
---
-
 - protégés contre les surcharges et surtensions
 - les actionneurs sont _relativement_ abordables
 - plusieurs gammes
 
 ???
-pour les différents besoins qu'on peut en avoir
+Les actionneurs de Robotis sont des servo-moteurs tout intégrés, communiquant avec un protocole série et branchés en cascade.
+
+Protocole documenté : ce qui nous donne une entière liberté sur le logiciel (le dépôt github a été créé en mars 2016)
+
+**déjà travaillé avec le SDK de Robotis ?**
+
+Différentes gammes : pour les différents besoins qu'on peut en avoir
 
 ---
 ### Dynamixels
@@ -130,17 +113,44 @@ pour les différents besoins qu'on peut en avoir
 Et aussi, ce sont les actionneurs utilisés pour construire nos robots
 
 ---
+### Robots tiers basés sur les Dynamixels
+Poppy ...
+
+.center[<img height="500px" alt="Poppy, le robot humanoïde de l'INRIA Bordeaux" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/poppy.jpg"/>]
+
+???
+un projet initié à l'INRIA Bordeaux
+
+---
+### Robots tiers basés sur les Dynamixels
+Poppy et bien sûr TurtleBot 3
+
+.center[<img width="800px" alt="Poppy, le robot humanoïde de l'INRIA Bordeaux" src="file:///home/dgoepp/Documents/RosControl/Presentation-TechDays-2017/images/turtlebot3_models.png"/>]
+
+???
+Un projet en collaboration avec Robotis, motorisé avec la nouvelle gamme Dynamixel X.
+
+---
 ## Donc...
 
 - nous travaillons avec ROS
---
-
 - nos robots sont à base de dynamixels
+
+TODO : deux approches d'intégration à ROS:
+- ad-hoc en créant notre propre architecture de commande et choisissant la façon de communiquer avec ROS
+- avec ros_control
 
 ???
 Résumons la présentation. Les robots de ResiBots sont à base de Dynamixels et tournent avec ROS. Il y a plusieurs robots avec différentes versions d'actionneurs. Nous pouvons avoir à ajouter ou retirer des actionneurs.
 
 Pour simplifier tout ça, il serait pratique d'avoir une couche logicielle intégrée à ROS qui gère tous ces actionneurs pour nous.
+
+Et là, quelle surprise ! ros_control existe déjà ! Voyons ce que c'est.
+
+Nous avons donc deux approches possibles TODO
+
+
+Nous avons choisi d'utiliser ROS_control. Nous verrons plus tard pourquoi (TODO)
 
 ---
 class:center, middle, inverse
@@ -149,7 +159,6 @@ class:center, middle, inverse
 .footnote[fortement inspiré de la [présentation](https://vimeo.com/107507546) de Adolfo Rodríguez Tsouroukdissian]
 
 ???
-Et là, quelle surprise ! ros_control existe déjà ! Voyons ce que c'est.
 
 Maintenant le cœur du sujet.
 
@@ -161,34 +170,26 @@ C'est
 - un ensemble de paquets ROS
 - un petit framework/cadriciel pour l'écriture de contrôleurs de robots
 
---
 
 <br/>
 Il va nous permettre de :
-- séparer le code spécifique au matériel et la boucle de contrôle
-
---
+- distinguer le code chargé de
+    - l'_interaction avec le matériel_, de celui chargé de
+    - la _boucle d'asservissement_
 - réutiliser le code des autres
-
-???
-appliquer l'idée à l'origine de ROS;  
-se concrétise par le partage de contrôleurs ou d'interfaces pour des robots
-
---
 - accéder aux outils comme MoveIt! et navigation stack
-
---
-- asservir en **temps réel**
-
-???
-(sans pour autant l'imposer)
-
---
+- asservir en temps réel
 
 <br/>
 Trois modes de commande : position, vitesse et effort
 
+???
+<tt>ros_control</tt> intègre à la fois la définition de la boucle d'asservissement et l'interface matérielle mais les distingue clairement et leur donne une certaine indépendance.
 
+Réutiliser le code des autres : appliquer l'idée à l'origine de ROS;  
+  se concrétise par le partage de contrôleurs ou d'interfaces pour des robots
+
+Temps réel : (sans pour autant l'imposer)
 ---
 ### <tt>ros_control</tt>
 
@@ -281,18 +282,16 @@ Je vais maintenant parler un peu plus des contrôleurs, et du `controller_manage
 
 Plugin chargé dynamiquement par le <tt>controler_manager</tt>.
 
---
-
 Un contrôleur peut être dans deux états :
-- stopped
-- running
-
---
+- <tt>stopped</tt>
+- <tt>running</tt>
 
 via des services ROS, <tt>controler_manager</tt>
 
 - charge les contrôleurs
 - gère leur cycle de vie
+
+Les contrôleurs sont exécutés **périodiquements** et **séquentiellement**
 
 ???
 <tt>controler_manager</tt> gère les contrôleurs et les charge.
@@ -300,10 +299,6 @@ via des services ROS, <tt>controler_manager</tt>
 Il permet aussi de **changer** de contrôleur **à la volée**.
 
 En cas d'arrêt d'urgence, l'idée est de faire un **reset** sur le **contrôleur**.
-
---
-
-Les contrôleurs sont exécutés **périodiquements** et **séquentiellement**
 
 ---
 class: middle, center, inverse
@@ -325,17 +320,21 @@ Pour nous :
 - abstrait la question du modèle de Dynamixel (pour un même protocole)
 - suivre l'évolution les robots (nb de servos, nouveaux modèles) avec un minimum de changements logiciels.
 
---
-
 En somme, moins de code écrit en dur, plus de flexibilité.
+
+Cependant, les Dynamixels disposent déjà d'un asservissement intégré (type PID).
 
 ???
 En plus, les outils ROS sont à portée de main (actionlib par exemple).
 
+Les dynamixels sont en effet des actionneurs très complets et comprennent leur propre boucle d'asservissement. Ce qui nous a motivé pour utiliser ros_control (>< ad-hoc) est :
+- d'une part l'intégration aux outils ROS
+- d'autre part, la perspective de l'écriture d'un algorithme d'asservissement relativement bas niveau, par exemple pour maintenir l'hexapode horizontal, indépendamment de l'état du sol.
+
 ---
 ### <tt>libdynamixel</tt>.blue[\*]
 
-Nous avons développé la bibliothèque Libdynamixel.blue[\*]. Caractéristiques principales :
+Nous avons développé la bibliothèque <tt>libdynamixel</tt>.blue[\*]. Caractéristiques principales :
 - bibliothèque open source
 - écrite en C++11
 - fonctionne avec les version 1 et 2 du protocole
@@ -361,47 +360,49 @@ Fonctionnalités :
 - commande en radians (pas de conversion)
 - décalage et vitesse limite pour chaque actionneur
 
+Charactéristiques :
+- fréquence ≥ 50 Hz pour 18 servo-moteurs Dynamixel
+
 
 .footnote[.blue[\*][https://github.com/davetcoleman/ros_control_boilerplate/](https://github.com/davetcoleman/ros_control_boilerplate/)]
 ???
 Notre travail est basé sur ros_control_boilerplate qui offre un bon exemple de création d'une interface matérielle (pas pour la création d'un contrôleur)
 
 ---
-### Exemple d'utilisation
+### Exemple de fichier de configuration
 
 ```yaml
 dynamixel_control_hw:
-  loop_frequency: 10
-  cycle_time_error_threshold: 0.2
-  serial_interface: /dev/ttyUSB0
+  loop_frequency: 50
+  cycle_time_error_threshold: 0.1
+  serial_interface: /dev/ttyACM0
   baudrate: 1000000 # in bauds
   dynamixel_timeout: 0.05 # in seconds
   dynamixel_scanning: 0.05 # in seconds
   # correspondance between hardware IDs of the actuators and their names in ROS
   hardware_mapping:
-    first: 1
-    second: 26
-  # offset to be added, in ticks, to the position of an actuator
+    arm_joint_1: 2
+    arm_joint_2: 3
+  # offset to be added, in radians, to the position of an actuator
   hardware_corrections:
-    "26": 45
+    "2": 3.14159265359
+    "3": 3.14159265359
 ```
 
 ---
-### Exemple de fichier de config
+### Exemple de fichier de configuration
 
 ```yaml
 dynamixel_controllers:
   joint_state_controller:
     type: joint_state_controller/JointStateController
-    publish_rate: 10
+    publish_rate: 50
 
-  first_position_controller:
-    type: position_controllers/JointPositionController
-    joint: first
-
-  second_position_controller:
-    type: position_controllers/JointPositionController
-    joint: second
+  first_traj_controller:
+    type: position_controllers/JointTrajectoryController
+    joints:
+      - arm_joint_1
+      - arm_joint_2
 ```
 
 ---
@@ -414,23 +415,22 @@ dynamixel_controllers:
 
   <!-- URDF robot description -->
   <param name="robot_description" command="cat $(find dynamixel_control_hw)/urdf/sample.urdf" />
+
   <!-- Publish robot's state in the tf tree -->
-  <node pkg="robot_state_publisher" type="robot_state_publisher" name="rob_state_pub" />
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="rob_state_pub"/>
 
   <!-- Parameters for the hardware interface and controllers -->
-  <rosparam file="$(find dynamixel_control_hw)/config/sample.yaml"/>
+  <rosparam file="$(find dynamixel_control_hw)/config/traj.yaml"/>
 
   <!-- launch our hardware interface -->
   <node pkg="dynamixel_control_hw" type="dynamixel_control_hw" name="dynamixel_control_hw"
-        output="screen"/>
+       output="screen"/>
 
-  <!-- Start a controller for our dummy robot -->
+  <!-- Ask controller_manager to load a controller for our dummy robot -->
   <node name="controller" pkg="controller_manager" type="spawner" respawn="false"
     output="screen" args="/dynamixel_controllers/joint_state_controller
-                          /dynamixel_controllers/first_position_controller
-                          /dynamixel_controllers/second_position_controller" />
+      /dynamixel_controllers/first_traj_controller" />
 </launch>
-
 ```
 
 ---
@@ -444,6 +444,12 @@ Montrer :
 - rqt controller
 - rqt graph
 
+???
+L'intégration à Rviz et la disponibilité de <tt>rqt_graph</tt> sont possibles grâce au contrôleur <tt>JointTrajectoryController</tt>
+<tt>rqt_controller</tt> est fourni dans le pacquet <tt>ros_controllers</tt> et implémente un client au sens de l'actionlib.
+
+On a donc une bonne intégration avec les outils de l'échosystème ROS (et une démo facile) grâce à <tt>ros_control</tt>.
+
 ---
 class: middle, center, inverse
 
@@ -452,6 +458,9 @@ class: middle, center, inverse
 ---
 ### Pour résumer
 
+TODO
+
+(TODO) Un bémol cependant, les résultats obtenus ont requis de se plonger quelques fois dans le code de <tt>ros_control</4tt> ou des outils associés car la documentation du projet est très succinte.
 
 ---
 ### Et au delà
@@ -462,12 +471,12 @@ class: middle, center, inverse
   * interface matérielle combinée
   * politique de gestion des ressources
   * ros_controllers
---
 
+<br/>
 * ros_control devrait dans le futur pouvoir faire...
   * gérer le changement de mode de commande
---
 
+<br/>
 * future work
   * la commande en vitesse (wheel mode)
   * limites angulaires
