@@ -172,7 +172,7 @@ C'est
 
 
 <br/>
-Il va nous permettre de :
+Il va nous permettre de
 - distinguer le code chargé de
     - l'_interaction avec le matériel_, de celui chargé de
     - la _boucle d'asservissement_
@@ -190,6 +190,13 @@ Réutiliser le code des autres : appliquer l'idée à l'origine de ROS;
   se concrétise par le partage de contrôleurs ou d'interfaces pour des robots
 
 Temps réel : (sans pour autant l'imposer)
+
+---
+### <tt>ros_control</tt>
+Historique
+- pr2_controller_manager créé en 2009 par Willow Garage
+- ros_control démarré fin 2012
+
 ---
 ### <tt>ros_control</tt>
 
@@ -535,6 +542,7 @@ dynamixel_controllers:
 ---
 ### Démo avec deux actionneurs
 
+???
 Faire un mini bras à deux degrés de liberté et montrer le résultat.
 
 Montrer :
@@ -543,11 +551,12 @@ Montrer :
 - rqt controller
 - rqt graph
 
-???
 L'intégration à Rviz et la disponibilité de <tt>rqt_graph</tt> sont possibles grâce au contrôleur <tt>JointTrajectoryController</tt>
 <tt>rqt_controller</tt> est fourni dans le pacquet <tt>ros_controllers</tt> et implémente un client au sens de l'actionlib.
 
 On a donc une bonne intégration avec les outils de l'échosystème ROS (et une démo facile) grâce à <tt>ros_control</tt>.
+
+C'est donc grâce à l'utilisation de ros_control qu'on a si rapidement accès à tous ces outils.
 
 ---
 class: middle, center, inverse
@@ -558,6 +567,8 @@ class: middle, center, inverse
 ### Pour résumer
 
 <tt>ros_control</tt> c'est cool, mais la documentation lacunaire.
+
+L'écriture d'une interface matérielle est probablement aussi complexe que celle d'un noeud ad-hoc, par manque de documentation.
 
 ???
 TODO
