@@ -50,7 +50,9 @@ robots à pattes,
 ???
 Sur ce robot, chaque patte est dotée de trois degrés de liberté, chacun actionné par un servo-moteur dynamixel.
 
-Nous avons aussi une copie quasi conforme de cet hexapode (sans les capteurs de force) et une version plus grande dont les pattes sont équipées de roues orientables et motorisées TODO : photographie ?
+Nous avons aussi une copie quasi conforme de cet hexapode (sans les capteurs de force) et une version plus grande dont les pattes sont équipées de roues orientables et motorisées
+
+TODO : photographie ?
 
 ---
 ### Robots pour ResiBots
@@ -136,16 +138,14 @@ Un projet en collaboration avec Robotis, motorisé avec la nouvelle gamme Dynami
 - nous travaillons avec ROS
 - nos robots sont à base de dynamixels
 
-TODO : deux approches d'intégration à ROS:
-- ad-hoc en créant notre propre architecture de commande et choisissant la façon de communiquer avec ROS
+Deux approches d'intégration à ROS:
+- ad-hoc
 - avec ros_control
 
 ???
 Résumons la présentation. Les robots de ResiBots sont à base de Dynamixels et tournent avec ROS. Il y a plusieurs robots avec différentes versions d'actionneurs. Nous pouvons avoir à ajouter ou retirer des actionneurs.
 
 Pour simplifier tout ça, il serait pratique d'avoir une couche logicielle intégrée à ROS qui gère tous ces actionneurs pour nous.
-
-Et là, quelle surprise ! ros_control existe déjà ! Voyons ce que c'est.
 
 Nous avons donc deux approches possibles TODO
 
@@ -240,21 +240,35 @@ Temps réel : (sans pour autant l'imposer)
 
 ---
 ### <tt>ros_control</tt>
+#### <tt>RobotHW</tt>
 
-<br/>
-<br/>
-<br/>
-.image[![illustration de ros_control](diagrammes/dessin-RobotHW-4.svg)]
+```cpp
+class DynamixelHardwareInterface : public hardware_interface::RobotHW {
+    public:
+        DynamixelHardwareInterface(const std::string& usb_serial_interface,
+            const int& baudrate,
+            const float& read_timeout,
+            const float& scan_timeout,
+            std::map<long long int, std::string> dynamixel_map,
+            std::map<long long int, long long int> dynamixel_max_speed,
+            std::map<long long int, double> dynamixel_corrections);
 
-???
-La communication entre l'interface matérielle et le contrôleur se fait par une interface matérielle. Le contrôleur reçoit en fait des pointeurs vers des données écrites ou lues par `RobotHW`.
+        ~DynamixelHardwareInterface();
 
-Les contrôleurs ont des interfaces ROS. Par exemple, un contrôleur de base mobile s'abonnera au sujet `/cmd_vel`.
+        /// Find all connected devices and register those refered in dynamixel_map in the
+        /// hardware interface.
+        void init();
 
+        // get the hardware's state
+        void read_joints();
 
+        // send the new command to hardware
+        void write_joints();
+};
+```
 
 ---
-### Circulation des données
+### <tt>ros_control</tt>
 
 <br/>
 <br/>
@@ -262,9 +276,9 @@ Les contrôleurs ont des interfaces ROS. Par exemple, un contrôleur de base mob
 .image[![illustration de ros_control](diagrammes/dessin-RobotHW-dataflow.svg)]
 
 ???
-Dans la boucle principale (temps réel), on appelle `read()`, `update()`, et enfin `write()`.
+La communication entre l'interface matérielle et le contrôleur se fait par une interface matérielle. Le contrôleur reçoit en fait des pointeurs vers des données écrites ou lues par `RobotHW`.
 
-L'interface matérielle donne en fait des pointeurs vers des variables qui seront lues ou modifiées par les contrôleurs
+Les contrôleurs ont des interfaces ROS. Par exemple, un contrôleur de base mobile s'abonnera au sujet `/cmd_vel`.
 
 ---
 ### Contrôleurs
@@ -301,6 +315,44 @@ Il permet aussi de **changer** de contrôleur **à la volée**.
 En cas d'arrêt d'urgence, l'idée est de faire un **reset** sur le **contrôleur**.
 
 ---
+### Circulation des données
+
+<br/>
+<br/>
+<br/>
+.image[![illustration de ros_control](diagrammes/dessin-RobotHW-dataflow.svg)]
+
+???
+Dans la boucle principale (temps réel), on appelle `read()`, `update()`, et enfin `write()`.
+
+L'interface matérielle donne en fait des pointeurs vers des variables qui seront lues ou modifiées par les contrôleurs
+
+---
+### Circulation des données
+
+```c++
+void DynamixelLoop::update(const ros::TimerEvent& e)
+{
+    // Input
+    // get the hardware's state
+    _hardware_interface->read_joints();
+
+    // Control
+    // let the controller(s) compute the new command (via the controller manager)
+    _controller_manager->update(ros::Time::now(), _elapsed_time);
+
+    // Output
+    // send the new command to hardware
+    _hardware_interface->write_joints();
+}
+```
+
+<!-- cancel_ atom's idiotic syntax highlighting -->
+
+???
+En code source, voilà ce que ça donne : un appel à controller_manager.update
+
+---
 class: middle, center, inverse
 
 ## dynamixel hardware interface
@@ -311,25 +363,6 @@ class: middle, center, inverse
 Jusque là nous avons vu à un haut niveau comment ros_control fonctionne. Il sépare  le matériel des contrôleurs, permet d'en changer à chaud, et offre trois modes de commande.
 
 Les robots sur lesquels je travaille utilisent tous des Dynamixels et nous voulions les intégrer correctement dans ros_control. Voyons donc l'interface matérielle qui en découle.
-
----
-### <tt>ros_control</tt>
-
-Pour nous :
-
-- abstrait la question du modèle de Dynamixel (pour un même protocole)
-- suivre l'évolution les robots (nb de servos, nouveaux modèles) avec un minimum de changements logiciels.
-
-En somme, moins de code écrit en dur, plus de flexibilité.
-
-Cependant, les Dynamixels disposent déjà d'un asservissement intégré (type PID).
-
-???
-En plus, les outils ROS sont à portée de main (actionlib par exemple).
-
-Les dynamixels sont en effet des actionneurs très complets et comprennent leur propre boucle d'asservissement. Ce qui nous a motivé pour utiliser ros_control (>< ad-hoc) est :
-- d'une part l'intégration aux outils ROS
-- d'autre part, la perspective de l'écriture d'un algorithme d'asservissement relativement bas niveau, par exemple pour maintenir l'hexapode horizontal, indépendamment de l'état du sol.
 
 ---
 ### <tt>libdynamixel</tt>.blue[\*]
@@ -346,14 +379,78 @@ Nous avons développé la bibliothèque <tt>libdynamixel</tt>.blue[\*]. Caracté
 .footnote[.blue[*][https://github.com/resibots/libdynamixel](https://github.com/resibots/libdynamixel)]
 
 ???
+Pour pouvoir écrire l'interface matérielle pour les dynamixels, il faut déjà pouvoir communiquer avec ces servo-moteurs. Pour ce faire, nous avons créé la libdynamixel
+
 Au moment de l'écriture de libdynamixel, le SDK de Robotis n'était pas open source.
+
+Le projet Poppy dispose aussi de sa propre bibliothèque écrite en Python.
+
+---
+### <tt>libdynamixel</tt>.blue[\*]
+
+```c++
+dynamixel::StatusPacket<dynamixel::protocols::Protocol1> status;
+
+dynamixel::controllers::Usb2Dynamixel serial(_usb_serial_interface, _baudrate);
+
+// goal position in ticks (0-2048)
+serial.send(dynamixel::servos::Mx28::set_goal_position_angle(2, goal_position));
+
+serial.recv(status);
+```
+
+<!-- cancel_ atom's idiotic syntax highlighting -->
+
+.footnote[.blue[*][https://github.com/resibots/libdynamixel](https://github.com/resibots/libdynamixel)]
+
+---
+### <tt>libdynamixel</tt>.blue[\*]
+
+```c++
+dynamixel::StatusPacket<dynamixel::protocols::Protocol1> status;
+
+dynamixel::controllers::Usb2Dynamixel serial(_usb_serial_interface, _baudrate);
+
+auto _dynamixel_servos = dynamixel::auto_detect<dynamixel::protocols::Protocol1>(serial);
+
+// goal position in radians (0-2π)
+serial.send(
+    _dynamixel_servos[2]->
+        set_goal_position_angle(goal_position));
+
+serial.recv(status);
+```
+
+<!-- cancel_ atom's idiotic syntax highlighting -->
+
+.footnote[.blue[*][https://github.com/resibots/libdynamixel](https://github.com/resibots/libdynamixel)]
+
+---
+### <tt>ros_control</tt>
+
+Pour nous :
+
+- abstrait la question du modèle de Dynamixel (pour un même protocole)
+- suivre l'évolution les robots (nb de servos, nouveaux modèles) avec un minimum de changements logiciels.
+
+En somme, moins de code écrit en dur, plus de flexibilité.
+
+<br/>
+Cependant, les Dynamixels disposent déjà d'un asservissement intégré (type PID).
+
+???
+En plus, les outils ROS sont à portée de main (actionlib par exemple).
+
+Les dynamixels sont en effet des actionneurs très complets et comprennent leur propre boucle d'asservissement. Ce qui nous a motivé pour utiliser ros_control (>< ad-hoc) est :
+- d'une part l'intégration aux outils ROS
+- d'autre part, la perspective de l'écriture d'un algorithme d'asservissement relativement bas niveau, par exemple pour maintenir l'hexapode horizontal, indépendamment de l'état du sol.
 
 ---
 ### <tt>dynamixel_control_hw</tt>
 
-Notre travail est basé sur
-- la bibliothèque <tt>libdynamixel</tt> développée dans l'équipe
+Ce noeud utilise
 - <tt>ros_control_boilerplate</tt>.blue[\*]
+- la bibliothèque <tt>libdynamixel</tt> développée dans l'équipe
 
 Fonctionnalités :
 - nombre arbitraire d'actionneurs (fichier de configuration)
@@ -366,7 +463,9 @@ Charactéristiques :
 
 .footnote[.blue[\*][https://github.com/davetcoleman/ros_control_boilerplate/](https://github.com/davetcoleman/ros_control_boilerplate/)]
 ???
-Notre travail est basé sur ros_control_boilerplate qui offre un bon exemple de création d'une interface matérielle (pas pour la création d'un contrôleur)
+Notre travail est basé sur ros_control_boilerplate qui offre un bon exemple de création d'une interface matérielle (pas pour la création d'un contrôleur).
+
+Il faut cependant bien distinguer dynamixel_control_hw et libdynamixel. dynamixel_control_hw utilise libdynamixel pour permettre à des contrôleurs d'accéder aux dynamixels. La libdynamixel ne sert qu'a la communication avec les actionneurs et ce noeud fait le lien avec ros_control
 
 ---
 ### Exemple de fichier de configuration
@@ -458,6 +557,9 @@ class: middle, center, inverse
 ---
 ### Pour résumer
 
+<tt>ros_control</tt> c'est cool, mais la documentation lacunaire.
+
+???
 TODO
 
 (TODO) Un bémol cependant, les résultats obtenus ont requis de se plonger quelques fois dans le code de <tt>ros_control</4tt> ou des outils associés car la documentation du projet est très succinte.
